@@ -27,10 +27,6 @@ $password = 'admin'
 $pass = ConvertTo-SecureString -AsPlainText $password -Force
 $c = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $username,$pass
 
-$endpoints = (Invoke-WebRequest -Uri http://localhost:1225 -Authentication Basic -Credential $c -AllowUnencryptedAuthentication).Links.href
-$pos = 1
-foreach($a in $endpoints){(Invoke-WebRequest -Uri $a -Authentication Basic -Credential $c -AllowUnencryptedAuthentication).Content | Out-File $("$pos" + ".html"); $pos++ }
-
 # Get the csv into an object and recompute the redacted SHA256 hashes.
 (Invoke-WebRequest -Uri http://localhost:1225/token_overview.csv -Authentication Basic -Credential $c -AllowUnencryptedAuthentication).Content | Out-File token_overview.csv
 
