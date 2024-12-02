@@ -63,10 +63,14 @@ foreach($token in $csv){
     $session.Cookies.Add($cookie);
 
     # build, request, and capture the mfa_code for the mfa_token cookie.
+    # note the mfa code is actually stored in the href of the link, the endpoint url is stored in the link text.
+    # this is the opposite of what one might expect.
     $url = 'http://localhost:1225/tokens/' + $token.sha256
     "Requesting mfa_code from " + $url
     $mfa_code = (Invoke-WebRequest -Uri $url -Authentication Basic -Credential $cred -AllowUnencryptedAuthentication -WebSession $session).Links.href
     "Got mfa_code " + $mfa_code + " from token at " + $url
+
+    # print out all of the current session cookies.
     $cooks = $session.Cookies.GetAllCookies()
     foreach($cook in $cooks){"Session cookies: " + $cook.Name + " " + $cook.Value}
 
@@ -79,7 +83,10 @@ foreach($token in $csv){
     $url = 'http://localhost:1225/mfa_validate/' + $token.sha256
     "Validating mfa_token " + $mfa_token + " at " + $url
     (Invoke-WebRequest -Uri $url -Authentication Basic -Credential $cred -AllowUnencryptedAuthentication -WebSession $session).Content
+
+    # print out all of the current session cookies.
     $cooks = $session.Cookies.GetAllCookies()
     foreach($cook in $cooks){"Session cookies: " + $cook.Name + " " + $cook.Value}
     "`n"
 }
+
