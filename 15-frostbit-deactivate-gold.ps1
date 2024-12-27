@@ -4,7 +4,7 @@
         Holiday Hack Challenge 2024 - Snow-maggedon
         
         Deactivate Frostbit Naughty-Nice List Publication
-        Difficulty: 5
+        Difficulty: 5 of 5
 
         Author: Nick DeBaggis
         License: BSD 3-Clause
@@ -50,6 +50,10 @@
         or there are time-outs or other errors try increasing this closer to 2.0, or, just don't
         supply this parameter at all.
 
+    .PARAMETER SaveTranscript
+
+        Optional Save a powershell transcript log in the default location.
+
     .EXAMPLE
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c
@@ -59,6 +63,9 @@
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SQLSleepTimeSeconds 1.5
 
+    .EXAMPLE
+
+        .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SQLSleepTimeSeconds 1.5 -SaveTranscript
 
     .LINK
         https://www.sans.org/mlp/holiday-hack-challenge-2024/
@@ -72,8 +79,13 @@ param(
     [String[]]$BotUUID,
 
     [Parameter(Mandatory=$false)]
-    [float]$SQLSleepTimeSeconds
+    [float]$SQLSleepTimeSeconds,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$SaveTranscript
 )
+
+if($SaveTranscript){Start-Transcript}
 
 function Is-UUID {
     param (
@@ -306,3 +318,4 @@ $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
 
+if($SaveTranscript){Stop-Transcript}
