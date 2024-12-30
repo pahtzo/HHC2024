@@ -49,10 +49,6 @@
         Required Full path to the Frostbit Ransomware encrypted file.
         This is found in the artifacts zip file.  The file has the extension .frostbit
 
-    .PARAMETER SaveTranscript
-
-        Optional Save a powershell transcript log in the default location.
-        
     .EXAMPLE
 
         .\14-frostbit-decrypt-gold.ps1 `
@@ -88,13 +84,8 @@ param(
     [String]$EncDataEncKeyHex,
 
     [Parameter(Mandatory=$true)]
-    [String]$FrostbitFile,
-
-    [Parameter(Mandatory=$false)]
-    [switch]$SaveTranscript
+    [String]$FrostbitFile
 )
-
-if($SaveTranscript){Start-Transcript}
 
 function Is-UUID {
     param (
@@ -285,4 +276,3 @@ $csv | where Number -EQ 440
 [System.IO.File]::WriteAllBytes($outputFilePath, $decryptedBytes)
 Write-Output "Decryption complete. Entire Naughty-Nice list saved to '$outputFilePath'"
 
-if($SaveTranscript){Stop-Transcript}
