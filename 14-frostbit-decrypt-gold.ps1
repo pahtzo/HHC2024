@@ -13,10 +13,17 @@
 
     .DESCRIPTION
 
-        This script exfiltrates data from the Frostbit Ransomware API server.
+        This script exfiltrates the RSA private key data from the Frostbit Ransomware API server.
+        After retrieving the RSA private key it then decrypts the EDEK - Encrypted Data Encryption Key -
+        which is then used to decrypt the naughty_nice_list.csv.frostbit encrypted file.
+
         You will need four items to run this script, they can be found in both the decrypted TLS pcap
         as well as in the frostbit_core_dump file: the botuuid, the nonce, and the encryptedkey.
         The frostbit encrypted file is found in the artifacts zip file.
+        
+        This script does not utilize the padding trick to pre-pad prior to our doubled-nonce; we
+        end up getting lucky that several files noted in the core dump exist without needing the
+        pre-padding so we're able to exfiltrate those directly.
 
     .PARAMETER BotUUID
 
