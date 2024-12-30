@@ -16,12 +16,13 @@
         This script exfiltrates data from the Frostbit Ransomware API server running ArangoDB as the backend DBMS.
         It is based on a SQLi in the X-API-Key HTTP header.  We're able to execute our own operations using
         the ternary operator (true or false statement or operation) ? (run if true) : (run if false).
+
         This allows us to exfiltrate data using numerous unfiltered operators such as ATTRIBUTES, LENGTH,
         and SUBSTRING.  Carefully constructing queries using these operations results in the ability to infer
-        what data values exist in the dbms collection.
+        what data attribute names and values exist in the dbms collection.
 
         In these examples a TRUE result means that SLEEP(2) was executed because the prior test operation resulted
-        in a true response and hence the response from the API to the request should take >2 seconds.  Whereas,
+        in a true response and hence the response from the API to the request should take > 2 seconds.  Whereas,
         a FALSE result means that SLEEP(2) is not executed with the ternary operator short-circuiting the operation.
         This results in a much quicker response time from the API.
 
