@@ -62,10 +62,6 @@
         
         Optional Use the found X-API-Key to automatically deactivate the Frostbit ransomware data publication.
 
-    .PARAMETER SaveTranscript
-
-        Optional Save a powershell transcript log in the default location.
-
     .EXAMPLE
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c
@@ -78,10 +74,6 @@
     .EXAMPLE
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SQLSleepTimeSeconds 1.5
-
-    .EXAMPLE
-
-        .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SQLSleepTimeSeconds 1.5 -SaveTranscript
 
     .LINK
         https://www.sans.org/mlp/holiday-hack-challenge-2024/
@@ -98,13 +90,8 @@ param(
     [float]$SQLSleepTimeSeconds,
 
     [Parameter(Mandatory=$false)]
-    [switch]$Deactivate,
-
-    [Parameter(Mandatory=$false)]
-    [switch]$SaveTranscript
+    [switch]$Deactivate
 )
-
-if($SaveTranscript){Start-Transcript}
 
 function Is-UUID {
     param (
@@ -341,4 +328,3 @@ if($Deactivate){
     "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
     "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
 }
-if($SaveTranscript){Stop-Transcript}

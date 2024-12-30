@@ -27,17 +27,9 @@
         The BotUUID will have this format of hex chars and dashes (example only):
         f14d60cd-67b9-44ec-8f41-b5ea5137413c
 
-    .PARAMETER SaveTranscript
-
-        Optional Save a powershell transcript log in the default location.
-
     .EXAMPLE
 
         .\15-frostbit-deactivate-sql-timing-ops-test.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c
-
-    .EXAMPLE
-
-        .\15-frostbit-deactivate-sql-timing-ops-test.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SaveTranscript
 
     .LINK
         https://www.sans.org/mlp/holiday-hack-challenge-2024/
@@ -48,13 +40,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [String]$BotUUID,
-
-    [Parameter(Mandatory=$false)]
-    [switch]$SaveTranscript
+    [String]$BotUUID
 )
-
-if($SaveTranscript){Start-Transcript}
 
 function Is-UUID {
     param (
@@ -136,6 +123,3 @@ else{
     "`nAvailable SQL operations:"
     $output | Select-String -Pattern "Blocked" -NotMatch
 }
-
-if($SaveTranscript){Stop-Transcript}
-
