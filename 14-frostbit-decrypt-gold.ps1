@@ -29,7 +29,7 @@
 
     .PARAMETER NonceHex
 
-        Required encryption Nonce, You can find the nonce in both the frostbit_core_dump file strings as well as the
+        Required nonce as a hex string, You can find the nonce in both the frostbit_core_dump file strings as well as the
         pcap file provided you have decrypted the TLS HTTP traffic stream.  It is located in a json object named "nonce".
 
     .PARAMETER EncDataEncKeyHex
@@ -112,6 +112,11 @@ function Escape-StringForURL {
         "'"  = "%2527"
         "~"  = "%257E"
         "`""  = "%2522"
+        "``"  = "%2560"
+        "%" = "%25"
+        "(" = "%2528"
+        ")" = "%2529"
+        "*" = "%252A"
     }
 
     # Loop through each key-value pair in the hashtable and perform the replacement
@@ -137,7 +142,8 @@ $inputFilePath = $FrostbitFile
 $outputFilePath = $inputFilePath -replace ".frostbit$", ""
 
 if($inputFilePath -eq $outputFilePath){
-    throw "FATAL: computed outputFilePath is the same as the inputFilePath! does the input file end in .frostbit?"
+    "FATAL: computed outputFilePath is the same as the inputFilePath! does the input file end in .frostbit?"
+    return
 }
 
 $DataEncKey = ""
@@ -231,15 +237,11 @@ $decryptedString = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
 "AES Data Encryption Key Check: " + $DataEncKeycheck
 
 if($DataEncKeycheck -ne $NonceHex){
-    throw "AES Data Encryption Key Check does not match nonce!"
+    "AES Data Encryption Key Check does not match nonce!"
+    return
 }
 else{
     "AES Data Encryption Key check matches nonce."
-}
-
-# Ensure key is exactly 32 bytes long (256-bit key for AES)
-if ($DataEncKey.Length -ne 32) {
-    throw "Key must be 32 characters long (256 bits)."
 }
 
 "Attempting to decrypt the encrypted csv data..."
