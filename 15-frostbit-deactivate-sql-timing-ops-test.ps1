@@ -13,7 +13,7 @@
 
     .DESCRIPTION
 
-        This script tests the ArangoDBDB SLEEP() operation to help determine a good range of timings for
+        This script tests the ArangoDB SLEEP() operation to help determine a good range of timings for
         the deactivation attack.  The script also attempts to execute all the AQL operations listed
         in the flat file sql-op-list.txt loaded from the same directory as the script, outputting two
         lists containing which operations are blocked or available for use as injections.
