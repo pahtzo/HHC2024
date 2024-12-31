@@ -26,8 +26,7 @@
         a FALSE result means that SLEEP(2) is not executed with the ternary operator short-circuiting the operation.
         This results in a much quicker response time from the API.
 
-        (below response times are approximate examples of my very early poking and prodding, I did not
-        use the 'IN' test for entire words in an array beyond this proof of concept)
+        Below response times are approximate examples of my very early poking and prodding:
 
         TRUE, response time 2204 ms : X-API-Key: ' OR "_key" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         FALSE response time  137 ms : X-API-Key: ' OR  "_ke" IN ATTRIBUTES(doc) ? SLEEP(2) : '
@@ -52,7 +51,7 @@
 
     .PARAMETER SQLSleepTimeSeconds
 
-        Optional number of seconds to set each ArangoDB SLEEP() time for the SQLi.
+        Optional Number of seconds to set each ArangoDB SLEEP() time for the SQLi.
         Should be between 0.5 and 2.0 based on prior testing.  Lower sleep times will let the
         script run faster but may cause the results to be incorrect. If the data doesn't look correct
         or there are time-outs or other errors try increasing this closer to 2.0, or, just don't
