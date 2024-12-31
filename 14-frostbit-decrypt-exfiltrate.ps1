@@ -16,7 +16,7 @@
         This script exfiltrates data from the Frostbit Ransomware API server.
         You will need three items to run this script, two can be found in both the decrypted TLS pcap
         as well as in the frostbit_core_dump file: the botuuid and the nonce.
-        The third parameter is the file path to exfiltrate.  This script utilizes per-padding
+        The third parameter is the file path to exfiltrate.  This script utilizes pre-padding
         prior to our <doubled-nonce><filename> attack to ensure the <doubled-nonce> lands at the
         same starting offset as the count modulus inside the _compute_hash function's second for loop
         of FrostBiteHashlib.py.
