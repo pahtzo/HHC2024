@@ -95,10 +95,6 @@ function Escape-StringForURL {
         "~"  = "%257E"
         "`""  = "%2522"
         "``"  = "%2560"
-        "%" = "%25"
-        "(" = "%2528"
-        ")" = "%2529"
-        "*" = "%252A"
     }
     # Loop through each key-value pair in the hashtable and perform the replacement
     foreach ($key in $charMap.Keys) {
