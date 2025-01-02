@@ -179,7 +179,7 @@ $found = $false
 
         if($DumpFileAsText){
             $exfil = $exfil -replace [char]0x0, " "
-            $exfil = [System.Text.RegularExpressions.Regex]::Replace($exfil, "[^\u0020-\u007E]", "")
+            $exfil = [System.Text.RegularExpressions.Regex]::Replace($exfil, "[^\u0020-\u007E\u000A\u000D]", "")
             "`nFile text (ascii only and nulls replaced with space): `n" + $exfil
         }
     }
@@ -194,3 +194,4 @@ if($found -eq $false){
     "File not found:      " + $FileToExfiltrate
     $resp.Content
 }
+
