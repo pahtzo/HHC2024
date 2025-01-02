@@ -322,8 +322,7 @@ if($Deactivate){
     "X-API-Key"="$apikey"
     })
     ($resp.Content | ConvertFrom-Json).message
-    
-    $swtotal.Stop()
-    "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
-    "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
 }
+$swtotal.Stop()
+"`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
+"Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
