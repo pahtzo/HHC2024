@@ -1,10 +1,11 @@
 <#
     HHC 2024 - Snow-maggedon
     Solver for Act 2 - Powershell Gold
-    pahtzo - 20241120
+    Difficulty: 3 of 5
+    Nick DeBaggis
     
     The md5 hash is stored in a text file using the md5 hash string as the filename and content plus a single Unix linefeed 0x0a.
-    The developer forgot to use the Trim() function on the md5 hash string prior to storing the hash in the file.
+    The developer forgot to use Trim() and/or -NoNewLine on the md5 hash string prior to storing the hash in the file.
     The ommision of trimming extraneous whitespace causes the sha256 hashing function to hash the string as
     sha256(md5hashstring + 0xa) which is not the same as sha256(md5hash_string).
     
