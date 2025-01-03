@@ -51,7 +51,7 @@
 
     .PARAMETER SQLSleepTimeSeconds
 
-        Optional Number of seconds to set each ArangoDB SLEEP() time for the SQLi.
+        Optional Number of seconds to set each ArangoDB SLEEP() time for the AQLi.
         Should be between 0.5 and 2.0 based on prior testing.  Lower sleep times will let the
         script run faster but may cause the results to be incorrect. If the data doesn't look correct
         or there are time-outs or other errors try increasing this closer to 2.0, or, just don't
@@ -145,7 +145,7 @@ $session.UserAgent = "Mozilla/5.0"
 $totalops = 0
 $len = 0
 
-"Starting Frostbit Deactivation Attack for BotUUID $BotUUID and SQLi SLEEP($sleepytime) on $(Get-Date)"
+"Starting Frostbit Deactivation Attack for BotUUID $BotUUID and AQLi SLEEP($sleepytime) on $(Get-Date)"
 
 # If key-candidates.txt exists try brute-forcing the key name search with the list of possible key names.
 # One key name per line.  Add known names such as: _id, _key, along with unknowns such as: blah, frostbit, etc.
@@ -334,6 +334,6 @@ else{
     "Add the '-Deactivate' switch to automatically deactivate the publication of the naughty_nice_list.csv file"
 }
 $swtotal.Stop()
-"`nCompleted Frostbit Deactivation Attack for BotUUID $BotUUID and SQLi SLEEP($sleepytime) on $(Get-Date)"
+"`nCompleted Frostbit Deactivation Attack for BotUUID $BotUUID and AQLi SLEEP($sleepytime) on $(Get-Date)"
 "Deactivation Attack took $($swtotal.Elapsed.Minutes) minutes, $($swtotal.Elapsed.Seconds) seconds."
 "Total request operations: " + $totalops
