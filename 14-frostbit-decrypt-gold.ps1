@@ -57,15 +57,6 @@
         -EncDataEncKeyHex 2f737670fa0810413cb5f8<example>4a9f9455c76d25ee6e853d `
         -FrostbitFile 'D:\HHC2024\FrostbitDecrypt\naughty_nice_list.csv.frostbit'
 
-    .EXAMPLE
-
-        .\14-frostbit-decrypt-gold.ps1 `
-        -BotUUID f14d60cd-67b9-44ec-8f41-b5ea5137413c `
-        -Nonce c97b647f99cb744a `
-        -EncDataEncKeyHex 2f737670fa0810413cb5f8<example>4a9f9455c76d25ee6e853d `
-        -FrostbitFile 'D:\HHC2024\FrostbitDecrypt\naughty_nice_list.csv.frostbit'
-        -SaveTranscript
-
     .LINK
         https://www.sans.org/mlp/holiday-hack-challenge-2024/
 
